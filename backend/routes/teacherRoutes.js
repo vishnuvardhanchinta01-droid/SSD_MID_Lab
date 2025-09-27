@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import { createTeacher, createClassroom, getClassrooms } from "../controllers/teacherController.js";
+import { createTeacher, createClassroom, getClassrooms, getClassroomByCode, deleteClassroom } from "../controllers/teacherController.js";
 import { isAuthenticated } from "../middleware/auth.js";
 // import Teacher from "../models/Teacher.js";
 
@@ -38,5 +38,9 @@ router.post("/logout", (req, res) => {
 // Classroom management routes (requires authentication)
 router.post("/classroom", isAuthenticated, createClassroom);
 router.get("/classrooms", isAuthenticated, getClassrooms);
+router.delete("/classroom/:code", isAuthenticated, deleteClassroom);
+
+// Public route for students to join classroom
+router.get("/classroom/code/:code", getClassroomByCode);
 
 export default router;
