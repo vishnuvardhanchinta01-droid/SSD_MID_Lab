@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
 
 const teacherSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  classrooms: [{ 
+    type: String,
+    default: []
+  }]
 }); 
 
 // Hash password before saving

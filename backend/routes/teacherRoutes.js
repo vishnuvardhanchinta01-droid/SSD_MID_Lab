@@ -1,6 +1,7 @@
 import express from "express";
 import passport from "passport";
-import { createTeacher } from "../controllers/teacherController.js";
+import { createTeacher, createClassroom, getClassrooms } from "../controllers/teacherController.js";
+import { isAuthenticated } from "../middleware/auth.js";
 // import Teacher from "../models/Teacher.js";
 
 const router = express.Router();
@@ -14,7 +15,14 @@ router.post("/login", (req, res, next) => {
 
     req.login(teacher, (err) => {
       if (err) return next(err);
-      res.json({ message: "Logged in successfully", teacher: { id: teacher._id, username: teacher.username } });
+      res.json({ 
+        message: "Logged in successfully", 
+        teacher: { 
+          id: teacher._id, 
+          username: teacher.username, 
+          classrooms: teacher.classrooms 
+        } 
+      });
     });
   })(req, res, next);
 });
@@ -26,5 +34,9 @@ router.post("/logout", (req, res) => {
     res.json({ message: "Logged out successfully" });
   });
 });
+
+// Classroom management routes (requires authentication)
+router.post("/classroom", isAuthenticated, createClassroom);
+router.get("/classrooms", isAuthenticated, getClassrooms);
 
 export default router;
