@@ -14,8 +14,9 @@ export const createQuestion = async (req, res) => {
 
 export const getQuestions = async (req, res) => {
   try {
-    const filters = {};
-    if(req.query.classroom_id) filters.classroom_id = req.query.classroom_id;
+    const { classroom_id } = req.params;
+    const filters = { classroom_id };
+    
     if (req.query.status) filters.status = req.query.status;
     if (req.query.author) filters.author = req.query.author;
     if (req.query.from || req.query.to) {
