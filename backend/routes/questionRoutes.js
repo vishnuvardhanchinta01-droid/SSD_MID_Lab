@@ -6,9 +6,9 @@ const router = express.Router();
 
 // Student routes
 router.post("/", createQuestion);
+router.get("/", getQuestions);
 
 // Teacher routes
-router.get("/", isAuthenticated, getQuestions);
 router.patch("/:id/status", isAuthenticated, updateStatus);
 router.delete("/:id", isAuthenticated, deleteQuestion);
 

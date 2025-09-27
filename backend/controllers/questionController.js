@@ -4,7 +4,7 @@ import Question from "../models/Question.js";
 export const createQuestion = async (req, res) => {
   try {
     const { classroom_id, question, author } = req.body;
-    const newQuestion = new Question({ question, author });
+    const newQuestion = new Question({ classroom_id, question, author });
     await newQuestion.save();
     res.status(201).json(newQuestion);
   } catch (err) {
@@ -15,6 +15,7 @@ export const createQuestion = async (req, res) => {
 export const getQuestions = async (req, res) => {
   try {
     const filters = {};
+    if(req.query.classroom_id) filters.classroom_id = req.query.classroom_id;
     if (req.query.status) filters.status = req.query.status;
     if (req.query.author) filters.author = req.query.author;
     if (req.query.from || req.query.to) {
@@ -30,7 +31,6 @@ export const getQuestions = async (req, res) => {
   }
 };
 
-// Teacher updates status of a question
 export const updateStatus = async (req, res) => {
   try {
     const { id } = req.params;

@@ -5,7 +5,6 @@ export const createTeacher = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Check if teacher already exists
     const existing = await Teacher.findOne({ username });
     if (existing) {
       return res.status(400).json({ error: "Teacher already exists" });

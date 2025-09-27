@@ -1,25 +1,12 @@
 import express from "express";
 import passport from "passport";
+import { createTeacher } from "../controllers/teacherController.js";
 // import Teacher from "../models/Teacher.js";
 
 const router = express.Router();
 
-// Teacher signup
-// router.post("/signup", async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
-//     let existing = await Teacher.findOne({ username });
-//     if (existing) return res.status(400).json({ error: "Username already exists" });
+router.post("/signup", createTeacher);
 
-//     const teacher = new Teacher({ username, password });
-//     await teacher.save();
-//     res.status(201).json({ message: "Teacher registered successfully" });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
-
-// Teacher login
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, teacher, info) => {
     if (err) return next(err);
