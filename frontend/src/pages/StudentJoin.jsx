@@ -45,7 +45,7 @@ const StudentJoin = () => {
         description: `Welcome to ${classroom.name}!`
       });
 
-      window.location.href = `/classroom-view/${classroom._id}`;
+      navigate(`/classroom-view/${classroom._id}`);
     } catch (error) {
       toast({
         title: "Error",

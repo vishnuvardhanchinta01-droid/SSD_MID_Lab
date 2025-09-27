@@ -71,7 +71,7 @@ export const notesAPI = {
 
   // Get notes by classroom
   getNotesByClassroom: async (classroomId) => {
-    const response = await fetch(`${API_BASE_URL}/question?classroom_id=${classroomId}`, {
+    const response = await fetch(`${API_BASE_URL}/question/${classroomId}`, {
       credentials: 'include',
     });
 

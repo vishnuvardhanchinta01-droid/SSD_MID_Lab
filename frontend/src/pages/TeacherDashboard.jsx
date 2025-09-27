@@ -32,7 +32,7 @@ const TeacherDashboard = () => {
 
     try {
       const teacherClassrooms = await classroomAPI.getClassrooms();
-      setClassrooms(teacherClassrooms);
+      setClassrooms(teacherClassrooms.classrooms);
     } catch (error) {
       console.error('Error loading dashboard:', error);
       toast({
