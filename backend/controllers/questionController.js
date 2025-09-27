@@ -3,8 +3,8 @@ import Question from "../models/Question.js";
 // Student posts a question
 export const createQuestion = async (req, res) => {
   try {
-    const { classroom_id, question, author } = req.body;
-    const newQuestion = new Question({ classroom_id, question, author });
+    const { classroom_id, question, author,color,category } = req.body;
+    const newQuestion = new Question({ classroom_id, question, author,color,category });
     await newQuestion.save();
     res.status(201).json(newQuestion);
   } catch (err) {

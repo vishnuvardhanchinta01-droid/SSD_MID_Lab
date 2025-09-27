@@ -1,4 +1,5 @@
 import Teacher from "../models/Teacher.js";
+import Classroom from "../models/Classroom.js";
 import { v4 as uuidv4 } from "uuid";
 
 // Create a new teacher
@@ -11,22 +12,29 @@ export const createTeacher = async (req, res) => {
       return res.status(400).json({ error: "Teacher already exists" });
     }
 
-    // Create teacher with first classroom
-    const firstClassroomId = uuidv4();
-    const teacher = new Teacher({ 
-      username, 
-      password,
-      classrooms: [firstClassroomId]
-    });
+    // Create teacher
+    const teacher = new Teacher({ username, password });
     await teacher.save();
 
-    res.status(201).json({ 
-      message: "Teacher created successfully", 
-      teacher: { 
-        id: teacher._id, 
-        username: teacher.username, 
-        classrooms: teacher.classrooms 
-      } 
+    // Create first classroom
+    const firstClassroom = new Classroom({
+      code: uuidv4().substring(0, 6).toUpperCase(), // 6 char code
+      name: "My Classroom",
+      teacher: teacher._id
+    });
+    await firstClassroom.save();
+
+    // Update teacher with classroom
+    teacher.classrooms = [firstClassroom._id];
+    await teacher.save();
+
+    res.status(201).json({
+      message: "Teacher created successfully",
+      teacher: {
+        id: teacher._id,
+        username: teacher.username,
+        classrooms: teacher.classrooms
+      }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -37,11 +45,22 @@ export const createTeacher = async (req, res) => {
 export const createClassroom = async (req, res) => {
   try {
     const teacherId = req.user.id; // From authentication middleware
-    const newClassroomId = uuidv4();
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ error: "Classroom name is required" });
+    }
+
+    const classroom = new Classroom({
+      code: uuidv4().substring(0, 6).toUpperCase(),
+      name,
+      teacher: teacherId
+    });
+    await classroom.save();
 
     const teacher = await Teacher.findByIdAndUpdate(
       teacherId,
-      { $push: { classrooms: newClassroomId } },
+      { $push: { classrooms: classroom._id } },
       { new: true }
     );
 
@@ -51,7 +70,8 @@ export const createClassroom = async (req, res) => {
 
     res.status(201).json({
       message: "Classroom created successfully",
-      classroom_id: newClassroomId,
+      code: classroom.code,
+      name: classroom.name,
       total_classrooms: teacher.classrooms.length
     });
   } catch (err) {
@@ -63,17 +83,59 @@ export const createClassroom = async (req, res) => {
 export const getClassrooms = async (req, res) => {
   try {
     const teacherId = req.user.id; // From authentication middleware
-    
-    const teacher = await Teacher.findById(teacherId).select('classrooms username');
+
+    const classrooms = await Classroom.find({ teacher: teacherId }).select('code name _id');
+    const teacher = await Teacher.findById(teacherId).select('username');
+
     if (!teacher) {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
     res.json({
       username: teacher.username,
-      classrooms: teacher.classrooms,
-      total_classrooms: teacher.classrooms.length
+      classrooms: classrooms.map(c => ({ id: c.code, name: c.name })),
+      total_classrooms: classrooms.length
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get classroom by code (for students to join)
+export const getClassroomByCode = async (req, res) => {
+  try {
+    const { code } = req.params;
+
+    const classroom = await Classroom.findOne({ code: code.toUpperCase() });
+    if (!classroom) {
+      return res.status(404).json({ error: "Classroom not found" });
+    }
+
+    res.json({
+      _id: classroom._id,
+      name: classroom.name,
+      code: classroom.code
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Delete classroom
+export const deleteClassroom = async (req, res) => {
+  try {
+    const teacherId = req.user.id;
+    const { code } = req.params;
+
+    const classroom = await Classroom.findOneAndDelete({ code: code.toUpperCase(), teacher: teacherId });
+    if (!classroom) {
+      return res.status(404).json({ error: "Classroom not found" });
+    }
+
+    // Remove from teacher's classrooms
+    await Teacher.findByIdAndUpdate(teacherId, { $pull: { classrooms: classroom._id } });
+
+    res.json({ message: "Classroom deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
