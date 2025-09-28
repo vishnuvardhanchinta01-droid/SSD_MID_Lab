@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import StickyNote from './StickyNote';
 import FilterBar from './FilterBar';
 import { notesAPI } from '../api/notes';
@@ -8,17 +10,30 @@ const NoteBoard = ({ classroomId, isTeacher = false, onNoteDeleted }) => {
   const [filteredNotes, setFilteredNotes] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadNotes();
   }, [classroomId]);
+
+  // Auto-refresh notes every 30 seconds for both students and teachers
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadNotes();
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const filtered = filterNotes(notes, selectedStatus);
     setFilteredNotes(filtered);
   }, [notes, selectedStatus]);
 
-  const loadNotes = async () => {
+  const loadNotes = async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    }
     try {
       const classroomNotes = await notesAPI.getNotesByClassroom(classroomId);
       setNotes(classroomNotes);
@@ -26,6 +41,9 @@ const NoteBoard = ({ classroomId, isTeacher = false, onNoteDeleted }) => {
       console.error('Error loading notes:', error);
     } finally {
       setLoading(false);
+      if (isRefresh) {
+        setRefreshing(false);
+      }
     }
   };
 
@@ -36,6 +54,17 @@ const NoteBoard = ({ classroomId, isTeacher = false, onNoteDeleted }) => {
       onNoteDeleted && onNoteDeleted();
     } catch (error) {
       console.error('Error deleting note:', error);
+    }
+  };
+
+  const handleStatusUpdate = async (noteId, newStatus) => {
+    try {
+      await notesAPI.updateNoteStatus(noteId, newStatus);
+      setNotes(notes.map(note => 
+        note.id === noteId ? { ...note, status: newStatus } : note
+      ));
+    } catch (error) {
+      console.error('Error updating note status:', error);
     }
   };
 
@@ -56,11 +85,23 @@ const NoteBoard = ({ classroomId, isTeacher = false, onNoteDeleted }) => {
 
   return (
     <div className="space-y-6">
-      <FilterBar
-        categories={statuses}
-        selectedCategory={selectedStatus}
-        onCategoryChange={setSelectedStatus}
-      />
+      <div className="flex items-center justify-between">
+        <FilterBar
+          categories={statuses}
+          selectedCategory={selectedStatus}
+          onCategoryChange={setSelectedStatus}
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => loadNotes(true)}
+          disabled={refreshing}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+          {refreshing ? 'Refreshing...' : 'Refresh'}
+        </Button>
+      </div>
 
       {filteredNotes.length === 0 ? (
         <div className="text-center py-12">
@@ -75,6 +116,7 @@ const NoteBoard = ({ classroomId, isTeacher = false, onNoteDeleted }) => {
               key={note.id}
               note={note}
               onDelete={handleDeleteNote}
+              onStatusUpdate={handleStatusUpdate}
               isTeacher={isTeacher}
             />
           ))}

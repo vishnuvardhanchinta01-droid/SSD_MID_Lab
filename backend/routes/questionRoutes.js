@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Student routes
 router.post("/", createQuestion);
-router.get("/:classroom_id", getQuestions);
+router.get("/:classroomId", getQuestions);
 
 // Teacher routes
 router.patch("/:id/status", isAuthenticated, updateStatus);

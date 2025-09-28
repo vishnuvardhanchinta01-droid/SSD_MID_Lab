@@ -31,7 +31,7 @@ const StudentJoin = () => {
 
     setLoading(true);
     try {
-      const classroom = await classroomAPI.joinClassroom(formData.classroomCode.toUpperCase());
+      const classroom = await classroomAPI.joinClassroom(formData.classroomCode.toUpperCase(), formData.studentName.trim());
 
       // Store student info for the session
       localStorage.setItem('currentStudent', JSON.stringify({
@@ -45,7 +45,7 @@ const StudentJoin = () => {
         description: `Welcome to ${classroom.name}!`
       });
 
-      navigate(`/classroom-view/${classroom._id}`);
+      navigate('/student-dashboard');
     } catch (error) {
       toast({
         title: "Error",

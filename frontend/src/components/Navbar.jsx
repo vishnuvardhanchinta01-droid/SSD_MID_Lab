@@ -1,4 +1,4 @@
-import { LogOut, Users, BookOpen } from 'lucide-react';
+import { LogOut, Users, BookOpen, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Navbar = ({ user, userType, onLogout, classroomInfo }) => {
@@ -36,13 +36,31 @@ const Navbar = ({ user, userType, onLogout, classroomInfo }) => {
             )}
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2 text-white">
               <Users size={16} />
               <span className="text-sm">
                 {userType === 'teacher' ? `Teacher: ${getUserName()}` : `Student: ${getUserName()}`}
               </span>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/ta-login'}
+              className="bg-green-600/20 border-green-400/30 text-green-100 hover:bg-green-600 hover:text-white"
+            >
+              <GraduationCap size={16} className="mr-1" />
+              TA Login
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/ta-signup'}
+              className="bg-green-600/10 border-green-400/20 text-green-200 hover:bg-green-600/30 hover:text-green-100"
+            >
+              <GraduationCap size={16} className="mr-1" />
+              TA Signup
+            </Button>
             <Button
               variant="outline"
               size="sm"

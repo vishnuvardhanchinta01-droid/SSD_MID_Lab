@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Educational Sticky Notes Design System - Vibrant & Modern */
+/* Educational Sticky Notes Design System - Clean & Simple */
 
 @layer base {
   :root {
-    /* Main colors */
+    /* Main colors - Clean palette */
     --background: 240 20% 98%;
     --foreground: 230 15% 15%;
 
@@ -162,6 +162,31 @@
   .bg-note-purple {
     background-color: hsl(var(--note-purple));
     color: hsl(280 55% 25%);
+  }
+
+  /* Note border color utilities */
+  .border-note-yellow-dark {
+    border-color: hsl(var(--note-yellow-dark));
+  }
+
+  .border-note-blue-dark {
+    border-color: hsl(var(--note-blue-dark));
+  }
+
+  .border-note-green-dark {
+    border-color: hsl(var(--note-green-dark));
+  }
+
+  .border-note-orange-dark {
+    border-color: hsl(var(--note-orange-dark));
+  }
+
+  .border-note-pink-dark {
+    border-color: hsl(var(--note-pink-dark));
+  }
+
+  .border-note-purple-dark {
+    border-color: hsl(var(--note-purple-dark));
   }
 
   /* Gradient utilities */

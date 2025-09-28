@@ -7,7 +7,20 @@ const questionSchema = new mongoose.Schema({
     author: { type: String, required: true },
     color: { type: String, default: "yellow" },
     category: { type: String, default: "general" },
-    timestamp: { type: Date, default: Date.now }
+    timestamp: { type: Date, default: Date.now },
+    // TA answer fields
+    taAnswer: {
+        answer: { type: String },
+        answeredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'TeachingAssistant' },
+        answeredAt: { type: Date },
+        attachments: [{
+            filename: { type: String },
+            originalName: { type: String },
+            path: { type: String },
+            size: { type: Number },
+            uploadedAt: { type: Date, default: Date.now }
+        }]
+    }
 });
 
 export default mongoose.model("Question", questionSchema);

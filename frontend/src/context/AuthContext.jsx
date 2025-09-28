@@ -5,10 +5,23 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null) // { id, username, role: "teacher" }
+  const [authLoading, setAuthLoading] = useState(true)
 
   useEffect(() => {
-    // On app load, check if user is logged in (could add a check endpoint if needed)
-    // For now, assume session persists
+    // On app load, check if user is logged in
+    const checkAuth = async () => {
+      try {
+        const result = await authAPI.getCurrentTeacher();
+        setUser({ ...result.teacher, role: 'teacher' });
+      } catch (error) {
+        // User is not authenticated, that's fine
+        setUser(null);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+    
+    checkAuth();
   }, [])
 
   const login = (data) => {
@@ -25,7 +38,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, authLoading }}>
       {children}
     </AuthContext.Provider>
   )

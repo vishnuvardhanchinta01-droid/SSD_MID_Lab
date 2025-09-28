@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { authAPI } from '../api/auth';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
 
 const TeacherSignup = () => {
@@ -19,7 +18,6 @@ const TeacherSignup = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,17 +51,16 @@ const TeacherSignup = () => {
 
     setLoading(true);
     try {
-      const result = await authAPI.signup({
+      await authAPI.signup({
         username: formData.username.trim(),
         password: formData.password
       });
-      login(result);
       toast({
         title: "Account Created!",
-        description: "Welcome to VidyaVichar!"
+        description: "Please login with your credentials."
       });
 
-      navigate('/teacher-dashboard');
+      navigate('/teacher-login');
     } catch (error) {
       toast({
         title: "Signup Failed",

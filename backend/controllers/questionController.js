@@ -14,8 +14,8 @@ export const createQuestion = async (req, res) => {
 
 export const getQuestions = async (req, res) => {
   try {
-    const { classroom_id } = req.params;
-    const filters = { classroom_id };
+    const { classroomId } = req.params;
+    const filters = { classroom_id: classroomId };
     
     if (req.query.status) filters.status = req.query.status;
     if (req.query.author) filters.author = req.query.author;
@@ -37,7 +37,7 @@ export const updateStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!["answered", "unanswered"].includes(status)) {
+    if (!["answered", "unanswered", "important"].includes(status)) {
       return res.status(400).json({ error: "Invalid status value" });
     }
 

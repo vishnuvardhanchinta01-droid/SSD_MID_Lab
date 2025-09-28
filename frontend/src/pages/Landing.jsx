@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpen, Users, PlusCircle } from 'lucide-react';
+import { BookOpen, Users, PlusCircle, GraduationCap } from 'lucide-react';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Landing = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <Card className="bg-white/95 backdrop-blur-sm shadow-hover border-0 hover:scale-105 transition-all duration-300 cursor-pointer"
                 onClick={() => navigate('/teacher-options')}>
             <CardHeader>
@@ -54,6 +54,35 @@ const Landing = () => {
               <Button className="w-full bg-accent text-white border-0 hover:shadow-hover">
                 Join as Student
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/95 backdrop-blur-sm shadow-hover border-0 hover:scale-105 transition-all duration-300">
+            <CardHeader>
+              <div className="mx-auto mb-4 p-4 bg-green-500/10 rounded-full">
+                <GraduationCap className="h-12 w-12 text-green-600" />
+              </div>
+              <CardTitle className="text-2xl text-green-600">Teaching Assistant</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-6">
+                Review and analyze all classroom questions for additional clarifications
+              </p>
+              <div className="space-y-2">
+                <Button 
+                  className="w-full bg-green-600 text-white border-0 hover:bg-green-700"
+                  onClick={() => navigate('/ta-login')}
+                >
+                  TA Login
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full border-green-600 text-green-600 hover:bg-green-50"
+                  onClick={() => navigate('/ta-signup')}
+                >
+                  TA Signup
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

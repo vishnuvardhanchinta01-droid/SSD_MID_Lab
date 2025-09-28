@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Copy, ExternalLink, LogOut, Trash2 } from 'lucide-react';
+import { Plus, Copy, ExternalLink, LogOut, Trash2, GraduationCap } from 'lucide-react';
 import { classroomAPI } from '../api/classroom';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '../context/AuthContext';
@@ -53,7 +53,7 @@ const TeacherDashboard = () => {
     try {
       const newClassroom = await classroomAPI.createClassroom(newClassroomName.trim());
 
-      setClassrooms([...classrooms, { id: newClassroom.code, name: newClassroom.name }]);
+      setClassrooms([...classrooms, { id: newClassroom._id || newClassroom.id, code: newClassroom.code, name: newClassroom.name }]);
       setNewClassroomName('');
       setShowCreateForm(false);
 
@@ -123,14 +123,32 @@ const TeacherDashboard = () => {
               <h1 className="text-2xl font-bold text-white">Welcome back, {user?.username}!</h1>
               <p className="text-white/90">Manage your classrooms and student questions</p>
             </div>
-            <Button
-              variant="outline"
-              onClick={handleLogout}
-              className="bg-white/10 border-white/20 text-white hover:bg-white hover:text-primary"
-            >
-              <LogOut size={16} className="mr-2" />
-              Logout
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => navigate('/ta-login')}
+                className="bg-green-600/20 border-green-400/30 text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <GraduationCap size={16} className="mr-2" />
+                TA Login
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/ta-signup')}
+                className="bg-green-600/10 border-green-400/20 text-green-200 hover:bg-green-600/30 hover:text-green-100"
+              >
+                <GraduationCap size={16} className="mr-2" />
+                TA Signup
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                className="bg-white/10 border-white/20 text-white hover:bg-white hover:text-primary"
+              >
+                <LogOut size={16} className="mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -204,20 +222,20 @@ const TeacherDashboard = () => {
                    <CardTitle className="text-primary">{classroom.name}</CardTitle>
                    <div className="flex items-center justify-between">
                      <span className="text-sm text-muted-foreground">
-                       Code: <span className="font-mono font-bold">{classroom.id}</span>
+                       Code: <span className="font-mono font-bold">{classroom.code}</span>
                      </span>
                      <div className="flex gap-2">
                        <Button
                          size="sm"
                          variant="outline"
-                         onClick={() => copyToClipboard(classroom.id)}
+                         onClick={() => copyToClipboard(classroom.code)}
                        >
                          <Copy size={14} />
                        </Button>
                        <Button
                          size="sm"
                          variant="outline"
-                         onClick={() => handleDeleteClassroom(classroom.id)}
+                         onClick={() => handleDeleteClassroom(classroom.code)}
                          className="text-red-500 hover:text-red-700"
                        >
                          <Trash2 size={14} />

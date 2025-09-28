@@ -54,9 +54,16 @@ export const authAPI = {
     return await response.json();
   },
 
-  // Get current teacher (if needed, but since sessions handle it, maybe not)
-  getCurrentTeacher: () => {
-    // For now, return null; frontend will manage state
-    return null;
+  // Get current teacher
+  getCurrentTeacher: async () => {
+    const response = await fetch(`${API_BASE_URL}/teacher/me`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Not authenticated');
+    }
+
+    return await response.json();
   }
 };

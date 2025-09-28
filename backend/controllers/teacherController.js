@@ -70,6 +70,7 @@ export const createClassroom = async (req, res) => {
 
     res.status(201).json({
       message: "Classroom created successfully",
+      _id: classroom._id,
       code: classroom.code,
       name: classroom.name,
       total_classrooms: teacher.classrooms.length
@@ -84,7 +85,7 @@ export const getClassrooms = async (req, res) => {
   try {
     const teacherId = req.user.id; // From authentication middleware
 
-    const classrooms = await Classroom.find({ teacher: teacherId }).select('code name _id');
+    const classrooms = await Classroom.find({ teacher: teacherId }).select('code name _id students');
     const teacher = await Teacher.findById(teacherId).select('username');
 
     if (!teacher) {
@@ -93,7 +94,12 @@ export const getClassrooms = async (req, res) => {
 
     res.json({
       username: teacher.username,
-      classrooms: classrooms.map(c => ({ id: c.code, name: c.name })),
+      classrooms: classrooms.map(c => ({ 
+        id: c._id, 
+        code: c.code, 
+        name: c.name,
+        studentCount: c.students ? c.students.length : 0
+      })),
       total_classrooms: classrooms.length
     });
   } catch (err) {
@@ -105,16 +111,27 @@ export const getClassrooms = async (req, res) => {
 export const getClassroomByCode = async (req, res) => {
   try {
     const { code } = req.params;
+    const { studentName } = req.body || {};
 
     const classroom = await Classroom.findOne({ code: code.toUpperCase() });
     if (!classroom) {
       return res.status(404).json({ error: "Classroom not found" });
     }
 
+    // Add student to classroom if name is provided and student doesn't already exist
+    if (studentName) {
+      const studentExists = classroom.students.some(student => student.name === studentName);
+      if (!studentExists) {
+        classroom.students.push({ name: studentName });
+        await classroom.save();
+      }
+    }
+
     res.json({
       _id: classroom._id,
       name: classroom.name,
-      code: classroom.code
+      code: classroom.code,
+      studentCount: classroom.students.length
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
